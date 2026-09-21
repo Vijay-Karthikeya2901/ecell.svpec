@@ -1,0 +1,4 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { CTA, Initiatives } from "@/components/site/home-sections";
+import { ContentPage } from "@/components/site/page";
+export const Route=createFileRoute("/initiatives")({head:()=>({meta:[{title:"Initiatives | E-Cell SVPEC"},{name:"description",content:"Programs, workshops and startup support from E-Cell SVPEC."},{property:"og:title",content:"E-Cell SVPEC Initiatives"},{property:"og:description",content:"Practical pathways for student entrepreneurs."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:()=> <ContentPage eyebrow="Our work" title="From Curiosity To Capability" description="Programs designed to help students discover opportunities, develop skills and take action."><Initiatives/><CTA/></ContentPage>});

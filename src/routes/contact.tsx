@@ -1,0 +1,4 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { Contact } from "@/components/site/home-sections";
+import { ContentPage } from "@/components/site/page";
+export const Route=createFileRoute("/contact")({head:()=>({meta:[{title:"Contact | E-Cell SVPEC"},{name:"description",content:"Contact or join E-Cell SVPEC in Visakhapatnam."},{property:"og:title",content:"Contact E-Cell SVPEC"},{property:"og:description",content:"Join, partner or start a conversation with E-Cell SVPEC."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:()=> <ContentPage eyebrow="Get involved" title="Your Next Step Starts Here" description="Join the team, bring us an idea or explore a partnership with E-Cell SVPEC."><Contact/></ContentPage>});

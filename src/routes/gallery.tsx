@@ -1,0 +1,4 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { Gallery, Testimonials } from "@/components/site/home-sections";
+import { ContentPage } from "@/components/site/page";
+export const Route=createFileRoute("/gallery")({head:()=>({meta:[{title:"Gallery | E-Cell SVPEC"},{name:"description",content:"Explore E-Cell SVPEC events, workshops and competitions."},{property:"og:title",content:"E-Cell SVPEC Gallery"},{property:"og:description",content:"Moments of learning, building and collaboration."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:()=> <ContentPage eyebrow="Gallery" title="The Work, The People, The Momentum" description="A look at the conversations and experiences shaping our entrepreneurial community."><Gallery/><Testimonials/></ContentPage>});

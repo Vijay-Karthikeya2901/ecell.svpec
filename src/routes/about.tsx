@@ -1,0 +1,4 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { About, Community, Stats, Testimonials } from "@/components/site/home-sections";
+import { ContentPage } from "@/components/site/page";
+export const Route=createFileRoute("/about")({head:()=>({meta:[{title:"About | E-Cell SVPEC"},{name:"description",content:"Our vision and mission for entrepreneurship at SVPEC."},{property:"og:title",content:"About E-Cell SVPEC"},{property:"og:description",content:"A student-led community turning ideas into impact."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:()=> <ContentPage eyebrow="About us" title="A Campus Built To Create" description="We help students think independently, act boldly and build solutions with real-world value."><About/><Stats/><Community/><Testimonials/></ContentPage>});
