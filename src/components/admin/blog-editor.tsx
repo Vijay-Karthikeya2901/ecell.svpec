@@ -7,7 +7,6 @@ import {
   type BlogInput,
   type FirebaseBlog,
 } from "@/lib/firebase-firestore";
-import { uploadBlogImage } from "@/lib/firebase-storage";
 import { firebaseErrorMessage } from "@/lib/firebase";
 
 type Props = { id?: string };
@@ -38,8 +37,6 @@ export function BlogEditor({ id }: Props) {
   const [loading, setLoading] = useState(Boolean(id));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [image, setImage] = useState<File | null>(null);
-  const [preview, setPreview] = useState("");
   const editor = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
     if (id)
@@ -60,7 +57,6 @@ export function BlogEditor({ id }: Props) {
             status: blog.status,
             publishedAt: blog.publishedAt,
           });
-          setPreview(blog.coverImageUrl);
         })
         .catch((e) => setError(firebaseErrorMessage(e)))
         .finally(() => setLoading(false));
@@ -107,9 +103,7 @@ export function BlogEditor({ id }: Props) {
         publishedAt: status === "published" ? (form.publishedAt ?? new Date()) : null,
       };
       const blogId = id ?? (await createBlog(input));
-      let coverImageUrl = form.coverImageUrl;
-      if (image) coverImageUrl = await uploadBlogImage(blogId, image);
-      await updateBlog(blogId, { ...input, coverImageUrl });
+      await updateBlog(blogId, input);
       await navigate({ to: "/admin/blogs" });
     } catch (e) {
       setError(firebaseErrorMessage(e));
@@ -263,20 +257,20 @@ export function BlogEditor({ id }: Props) {
           </div>
         </div>
         <div className="rounded-xl border bg-background p-5">
-          <h2 className="font-bold text-brand-navy">Cover image</h2>
+          <h2 className="font-bold text-brand-navy">Cover image URL</h2>
           <input
-            type="file"
-            accept="image/jpeg,image/png,image/webp,image/gif"
-            onChange={(e) => {
-              const file = e.target.files?.[0] ?? null;
-              setImage(file);
-              setPreview(file ? URL.createObjectURL(file) : form.coverImageUrl);
-            }}
-            className="mt-4 w-full text-sm"
+            type="url"
+            value={form.coverImageUrl}
+            onChange={(e) => set("coverImageUrl", e.target.value)}
+            className="mt-4 h-11 w-full rounded-md border px-3 font-normal"
+            placeholder="https://images.example.com/cover.jpg"
           />
-          {preview && (
+          <p className="mt-2 text-xs leading-5 text-muted-foreground">
+            Paste a publicly accessible image URL. Images are not uploaded to Firebase.
+          </p>
+          {form.coverImageUrl && (
             <img
-              src={preview}
+              src={form.coverImageUrl}
               alt="Cover preview"
               className="mt-4 aspect-video w-full rounded-md object-cover"
             />

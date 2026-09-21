@@ -94,11 +94,11 @@ Use blue primarily for:
 
 Use white for most backgrounds.
 
---------------------------------------------------
+---
 
 NAVBAR
 
---------------------------------------------------
+---
 
 Create a sticky responsive navbar.
 
@@ -128,11 +128,11 @@ Right:
 
 On mobile use a hamburger menu.
 
---------------------------------------------------
+---
 
 HOME PAGE
 
---------------------------------------------------
+---
 
 Create a visually impressive hero section.
 
@@ -162,11 +162,11 @@ Innovation
 
 Leadership
 
---------------------------------------------------
+---
 
 ABOUT
 
---------------------------------------------------
+---
 
 Create an About E-Cell section.
 
@@ -192,11 +192,11 @@ Startup ecosystem
 
 Use a modern two-column layout.
 
---------------------------------------------------
+---
 
 IMPACT / STATS
 
---------------------------------------------------
+---
 
 Create a clean statistics section.
 
@@ -220,11 +220,11 @@ Startup Initiatives
 
 Use large typography and blue accents.
 
---------------------------------------------------
+---
 
 INITIATIVES
 
---------------------------------------------------
+---
 
 Title:
 
@@ -256,11 +256,11 @@ Arrow
 
 Add subtle hover animations.
 
---------------------------------------------------
+---
 
 EVENTS
 
---------------------------------------------------
+---
 
 Create an Upcoming Events section.
 
@@ -284,11 +284,11 @@ Add:
 
 Create reusable event data so new events can easily be added later.
 
---------------------------------------------------
+---
 
 FEATURED EVENT
 
---------------------------------------------------
+---
 
 Create a large full-width BLUE GRADIENT banner.
 
@@ -310,11 +310,11 @@ Register Now
 
 Use the E-Cell blue branding.
 
---------------------------------------------------
+---
 
 TEAM
 
---------------------------------------------------
+---
 
 Create a professional team section.
 
@@ -350,11 +350,11 @@ Instagram
 
 Use placeholder team members for now.
 
---------------------------------------------------
+---
 
 GALLERY
 
---------------------------------------------------
+---
 
 Create a modern responsive masonry-style gallery.
 
@@ -376,11 +376,11 @@ Use placeholder images that can easily be replaced.
 
 Add smooth hover effects.
 
---------------------------------------------------
+---
 
 COMMUNITY
 
---------------------------------------------------
+---
 
 Create a section explaining the E-Cell community.
 
@@ -400,11 +400,11 @@ Industry Professionals
 
 Use connected cards / network-style visuals.
 
---------------------------------------------------
+---
 
 TESTIMONIALS
 
---------------------------------------------------
+---
 
 Create three testimonial cards.
 
@@ -420,11 +420,11 @@ Photo
 
 Use placeholder content that can be replaced later.
 
---------------------------------------------------
+---
 
 PARTNERS
 
---------------------------------------------------
+---
 
 Create a clean partner/sponsor logo section.
 
@@ -434,11 +434,11 @@ Title:
 
 "Our Ecosystem"
 
---------------------------------------------------
+---
 
 JOIN E-CELL CTA
 
---------------------------------------------------
+---
 
 Create a large blue gradient section.
 
@@ -456,11 +456,11 @@ Buttons:
 
 "Partner With Us"
 
---------------------------------------------------
+---
 
 CONTACT
 
---------------------------------------------------
+---
 
 Create a clean contact section.
 
@@ -500,11 +500,11 @@ For now, frontend validation is enough.
 
 Structure the form so it can later connect to a FastAPI backend.
 
---------------------------------------------------
+---
 
 FOOTER
 
---------------------------------------------------
+---
 
 White/light background.
 
@@ -532,11 +532,11 @@ Bottom:
 
 © E-Cell Sanketika Vidya Parishad Engineering College
 
---------------------------------------------------
+---
 
 ANIMATIONS
 
---------------------------------------------------
+---
 
 Use Framer Motion.
 
@@ -558,11 +558,11 @@ Do NOT overuse animations.
 
 The website should remain fast.
 
---------------------------------------------------
+---
 
 RESPONSIVENESS
 
---------------------------------------------------
+---
 
 Fully responsive:
 
@@ -580,11 +580,11 @@ Mobile navigation must work correctly.
 
 Cards should automatically adapt to screen size.
 
---------------------------------------------------
+---
 
 CODE ARCHITECTURE
 
---------------------------------------------------
+---
 
 Use reusable components.
 
@@ -638,11 +638,11 @@ gallery.ts
 
 Make the code clean and maintainable.
 
---------------------------------------------------
+---
 
 FUTURE BACKEND READY
 
---------------------------------------------------
+---
 
 The website will eventually have a FastAPI backend.
 
@@ -668,11 +668,11 @@ Do NOT implement the backend yet.
 
 Use mock data for now.
 
---------------------------------------------------
+---
 
 FINAL REQUIREMENT
 
---------------------------------------------------
+---
 
 This must look like a real professional E-Cell website, not an AI-generated template.
 
@@ -724,3 +724,11 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Firebase blog CMS
+
+The project includes a Firebase-backed blog CMS that is compatible with the Firebase Spark/no-cost plan. It uses **Firebase Authentication** for administrator login and **Cloud Firestore** for blog data, drafts, publishing, and administrator authorization. It does not require Firebase Cloud Storage or the Blaze billing plan.
+
+Administrators sign in at `/admin/login`. The first administrator is created by adding an `admins/{uid}` document in Firestore for the UID of an Email/Password Authentication user. Blog cover images are entered as publicly hosted image URLs and stored in the `coverImageUrl` Firestore field; no image upload service is used.
+
+See [`FIREBASE_SETUP.md`](./FIREBASE_SETUP.md) for environment variables, Firestore rules, indexes, local testing, and deployment commands.

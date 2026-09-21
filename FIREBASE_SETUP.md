@@ -4,7 +4,7 @@ The existing E-Cell public design remains intact. Public blogs now read publishe
 
 ## 1. Create the Firebase project
 
-Create a Firebase project, register a Web app, and enable **Authentication → Email/Password**, **Cloud Firestore**, and **Storage**. Copy the browser configuration values into a local `.env` file based on `.env.example`. The app only uses public Web SDK configuration values; never put a service-account private key in the frontend.
+Create a Firebase project, register a Web app, and enable **Authentication → Email/Password** and **Cloud Firestore**. This CMS is designed to run on Firebase's Spark/no-cost plan and does not require Firebase Cloud Storage or a Blaze billing plan. Copy the browser configuration values into a local `.env` file based on `.env.example`. The app only uses public Web SDK configuration values; never put a service-account private key in the frontend.
 
 Deploy the rules and index from the project root with the Firebase CLI:
 
@@ -12,7 +12,7 @@ Deploy the rules and index from the project root with the Firebase CLI:
 npm install -g firebase-tools
 firebase login
 firebase use YOUR_FIREBASE_PROJECT_ID
-firebase deploy --only firestore:rules,firestore:indexes,storage
+firebase deploy --only firestore:rules,firestore:indexes
 ```
 
 ## 2. Create the first administrator
@@ -25,9 +25,9 @@ Each `blogs/{blogId}` document contains `id` (the document ID), `title`, `slug`,
 
 ## 4. Admin workflow
 
-Open `/admin/login`, sign in with the authorized Firebase user, and use **New Blog** to write an article. The editor supports headings, bold, italic, lists, and links through a small toolbar. Save a draft or publish immediately. Cover images are validated as JPG, PNG, WEBP, or GIF and must be no larger than 5 MB; they are stored at `blog-images/{blogId}/cover-image`. The dashboard supports edit, publish, unpublish, and delete.
+Open `/admin/login`, sign in with the authorized Firebase user, and use **New Blog** to write an article. The editor supports headings, bold, italic, lists, and links through a small toolbar. Paste a publicly hosted image URL into the cover image URL field; the URL is stored in the existing `coverImageUrl` Firestore field. Save a draft or publish immediately. The dashboard supports edit, publish, unpublish, and delete.
 
-Unauthenticated users are redirected away from `/admin`, `/admin/blogs`, `/admin/blogs/new`, and `/admin/blogs/edit/{id}`. Firestore and Storage rules provide the authoritative backend protection; normal visitors can only read published blogs and cannot upload, modify, or delete content.
+Unauthenticated users are redirected away from `/admin`, `/admin/blogs`, `/admin/blogs/new`, and `/admin/blogs/edit/{id}`. Firestore rules provide the authoritative backend protection; normal visitors can only read published blogs and cannot create, modify, or delete content.
 
 ## 5. Local commands
 
@@ -54,4 +54,4 @@ git commit -m "Add Firebase blog CMS and admin publishing workflow"
 git push origin YOUR_BRANCH
 ```
 
-The only remaining setup requirement is entering the Firebase Web app values, enabling the three Firebase services, and creating the first `admins/{uid}` document.
+The only remaining setup requirement is entering the Firebase Web app values, enabling Authentication and Firestore, and creating the first `admins/{uid}` document. No Cloud Storage setup or Blaze billing plan is required.
