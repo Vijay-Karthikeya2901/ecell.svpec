@@ -97,8 +97,12 @@ function BlogPostPage() {
       <article className="section-pad">
         <div className="site-container">
           <Reveal>
-            <div className="aspect-[16/9] overflow-hidden border">
-              <img src={post.image} alt={post.title} className="h-full w-full object-cover" />
+            <div className="max-h-[720px] overflow-hidden border bg-secondary">
+              <img
+                src={post.image}
+                alt={post.title}
+                className="mx-auto max-h-[720px] w-full object-contain"
+              />
             </div>
           </Reveal>
           <div

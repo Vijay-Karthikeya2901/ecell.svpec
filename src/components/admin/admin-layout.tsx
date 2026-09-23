@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { BarChart3, FileText, LogOut, Menu, Plus, X } from "lucide-react";
+import { BarChart3, CalendarDays, FileText, LogOut, Menu, Plus, Users, X } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { logoutAdmin } from "@/lib/firebase-auth";
 import { AdminGuard } from "./admin-auth";
@@ -39,6 +39,20 @@ export function AdminLayout({ children }: { children: ReactNode }) {
               className="flex items-center gap-3 rounded-lg px-3 py-3 text-white/75 hover:bg-white/10 hover:text-white"
             >
               <FileText className="size-4" /> Blogs
+            </Link>
+            <Link
+              to="/admin/events"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 rounded-lg px-3 py-3 text-white/75 hover:bg-white/10 hover:text-white"
+            >
+              <CalendarDays className="size-4" /> Events
+            </Link>
+            <Link
+              to="/admin/team"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 rounded-lg px-3 py-3 text-white/75 hover:bg-white/10 hover:text-white"
+            >
+              <Users className="size-4" /> Team
             </Link>
             <Link
               to="/admin/blogs/new"

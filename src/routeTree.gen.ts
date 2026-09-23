@@ -22,7 +22,13 @@ import { Route as BlogsIndexRouteImport } from './routes/blogs/index'
 import { Route as BlogsSlugRouteImport } from './routes/blogs/$slug'
 import { Route as AdminBlogsIndexRouteImport } from './routes/admin/blogs/index'
 import { Route as AdminBlogsNewRouteImport } from './routes/admin/blogs/new'
+import { Route as AdminEventsIndexRouteImport } from './routes/admin/events/index'
+import { Route as AdminEventsNewRouteImport } from './routes/admin/events/new'
+import { Route as AdminTeamIndexRouteImport } from './routes/admin/team/index'
+import { Route as AdminTeamNewRouteImport } from './routes/admin/team/new'
 import { Route as AdminBlogsEditIdRouteImport } from './routes/admin/blogs/edit/$id'
+import { Route as AdminEventsEditIdRouteImport } from './routes/admin/events/edit/$id'
+import { Route as AdminTeamEditIdRouteImport } from './routes/admin/team/edit/$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -89,9 +95,39 @@ const AdminBlogsNewRoute = AdminBlogsNewRouteImport.update({
   path: '/admin/blogs/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminEventsIndexRoute = AdminEventsIndexRouteImport.update({
+  id: '/admin/events/',
+  path: '/admin/events/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminEventsNewRoute = AdminEventsNewRouteImport.update({
+  id: '/admin/events/new',
+  path: '/admin/events/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminTeamIndexRoute = AdminTeamIndexRouteImport.update({
+  id: '/admin/team/',
+  path: '/admin/team/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminTeamNewRoute = AdminTeamNewRouteImport.update({
+  id: '/admin/team/new',
+  path: '/admin/team/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminBlogsEditIdRoute = AdminBlogsEditIdRouteImport.update({
   id: '/admin/blogs/edit/$id',
   path: '/admin/blogs/edit/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminEventsEditIdRoute = AdminEventsEditIdRouteImport.update({
+  id: '/admin/events/edit/$id',
+  path: '/admin/events/edit/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminTeamEditIdRoute = AdminTeamEditIdRouteImport.update({
+  id: '/admin/team/edit/$id',
+  path: '/admin/team/edit/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -108,8 +144,14 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/blogs/': typeof BlogsIndexRoute
   '/admin/blogs/new': typeof AdminBlogsNewRoute
+  '/admin/events/new': typeof AdminEventsNewRoute
+  '/admin/team/new': typeof AdminTeamNewRoute
   '/admin/blogs/': typeof AdminBlogsIndexRoute
+  '/admin/events/': typeof AdminEventsIndexRoute
+  '/admin/team/': typeof AdminTeamIndexRoute
   '/admin/blogs/edit/$id': typeof AdminBlogsEditIdRoute
+  '/admin/events/edit/$id': typeof AdminEventsEditIdRoute
+  '/admin/team/edit/$id': typeof AdminTeamEditIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -124,8 +166,14 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/blogs': typeof BlogsIndexRoute
   '/admin/blogs/new': typeof AdminBlogsNewRoute
+  '/admin/events/new': typeof AdminEventsNewRoute
+  '/admin/team/new': typeof AdminTeamNewRoute
   '/admin/blogs': typeof AdminBlogsIndexRoute
+  '/admin/events': typeof AdminEventsIndexRoute
+  '/admin/team': typeof AdminTeamIndexRoute
   '/admin/blogs/edit/$id': typeof AdminBlogsEditIdRoute
+  '/admin/events/edit/$id': typeof AdminEventsEditIdRoute
+  '/admin/team/edit/$id': typeof AdminTeamEditIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -141,8 +189,14 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/blogs/': typeof BlogsIndexRoute
   '/admin/blogs/new': typeof AdminBlogsNewRoute
+  '/admin/events/new': typeof AdminEventsNewRoute
+  '/admin/team/new': typeof AdminTeamNewRoute
   '/admin/blogs/': typeof AdminBlogsIndexRoute
+  '/admin/events/': typeof AdminEventsIndexRoute
+  '/admin/team/': typeof AdminTeamIndexRoute
   '/admin/blogs/edit/$id': typeof AdminBlogsEditIdRoute
+  '/admin/events/edit/$id': typeof AdminEventsEditIdRoute
+  '/admin/team/edit/$id': typeof AdminTeamEditIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -159,8 +213,14 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/blogs/'
     | '/admin/blogs/new'
+    | '/admin/events/new'
+    | '/admin/team/new'
     | '/admin/blogs/'
+    | '/admin/events/'
+    | '/admin/team/'
     | '/admin/blogs/edit/$id'
+    | '/admin/events/edit/$id'
+    | '/admin/team/edit/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -175,8 +235,14 @@ export interface FileRouteTypes {
     | '/admin'
     | '/blogs'
     | '/admin/blogs/new'
+    | '/admin/events/new'
+    | '/admin/team/new'
     | '/admin/blogs'
+    | '/admin/events'
+    | '/admin/team'
     | '/admin/blogs/edit/$id'
+    | '/admin/events/edit/$id'
+    | '/admin/team/edit/$id'
   id:
     | '__root__'
     | '/'
@@ -191,8 +257,14 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/blogs/'
     | '/admin/blogs/new'
+    | '/admin/events/new'
+    | '/admin/team/new'
     | '/admin/blogs/'
+    | '/admin/events/'
+    | '/admin/team/'
     | '/admin/blogs/edit/$id'
+    | '/admin/events/edit/$id'
+    | '/admin/team/edit/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -208,8 +280,14 @@ export interface RootRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   BlogsIndexRoute: typeof BlogsIndexRoute
   AdminBlogsNewRoute: typeof AdminBlogsNewRoute
+  AdminEventsNewRoute: typeof AdminEventsNewRoute
+  AdminTeamNewRoute: typeof AdminTeamNewRoute
   AdminBlogsIndexRoute: typeof AdminBlogsIndexRoute
+  AdminEventsIndexRoute: typeof AdminEventsIndexRoute
+  AdminTeamIndexRoute: typeof AdminTeamIndexRoute
   AdminBlogsEditIdRoute: typeof AdminBlogsEditIdRoute
+  AdminEventsEditIdRoute: typeof AdminEventsEditIdRoute
+  AdminTeamEditIdRoute: typeof AdminTeamEditIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -305,11 +383,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBlogsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/events/': {
+      id: '/admin/events/'
+      path: '/admin/events'
+      fullPath: '/admin/events/'
+      preLoaderRoute: typeof AdminEventsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/events/new': {
+      id: '/admin/events/new'
+      path: '/admin/events/new'
+      fullPath: '/admin/events/new'
+      preLoaderRoute: typeof AdminEventsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/team/': {
+      id: '/admin/team/'
+      path: '/admin/team'
+      fullPath: '/admin/team/'
+      preLoaderRoute: typeof AdminTeamIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/team/new': {
+      id: '/admin/team/new'
+      path: '/admin/team/new'
+      fullPath: '/admin/team/new'
+      preLoaderRoute: typeof AdminTeamNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/blogs/edit/$id': {
       id: '/admin/blogs/edit/$id'
       path: '/admin/blogs/edit/$id'
       fullPath: '/admin/blogs/edit/$id'
       preLoaderRoute: typeof AdminBlogsEditIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/events/edit/$id': {
+      id: '/admin/events/edit/$id'
+      path: '/admin/events/edit/$id'
+      fullPath: '/admin/events/edit/$id'
+      preLoaderRoute: typeof AdminEventsEditIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/team/edit/$id': {
+      id: '/admin/team/edit/$id'
+      path: '/admin/team/edit/$id'
+      fullPath: '/admin/team/edit/$id'
+      preLoaderRoute: typeof AdminTeamEditIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -328,8 +448,14 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   BlogsIndexRoute: BlogsIndexRoute,
   AdminBlogsNewRoute: AdminBlogsNewRoute,
+  AdminEventsNewRoute: AdminEventsNewRoute,
+  AdminTeamNewRoute: AdminTeamNewRoute,
   AdminBlogsIndexRoute: AdminBlogsIndexRoute,
+  AdminEventsIndexRoute: AdminEventsIndexRoute,
+  AdminTeamIndexRoute: AdminTeamIndexRoute,
   AdminBlogsEditIdRoute: AdminBlogsEditIdRoute,
+  AdminEventsEditIdRoute: AdminEventsEditIdRoute,
+  AdminTeamEditIdRoute: AdminTeamEditIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ClipboardEvent,
+  type FormEvent,
+  type MouseEvent,
+} from "react";
 import { useNavigate } from "@tanstack/react-router";
 import {
   createBlog,
@@ -37,7 +44,9 @@ export function BlogEditor({ id }: Props) {
   const [loading, setLoading] = useState(Boolean(id));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const editor = useRef<HTMLTextAreaElement>(null);
+  const editor = useRef<HTMLDivElement>(null);
+  const savedRange = useRef<Range | null>(null);
+  const pendingContent = useRef<string | null>(null);
   useEffect(() => {
     if (id)
       getBlogById(id)
@@ -57,29 +66,85 @@ export function BlogEditor({ id }: Props) {
             status: blog.status,
             publishedAt: blog.publishedAt,
           });
+          pendingContent.current = blog.content;
         })
         .catch((e) => setError(firebaseErrorMessage(e)))
         .finally(() => setLoading(false));
   }, [id]);
   const set = (key: keyof BlogInput, value: string | BlogInput["status"] | Date | null) =>
     setForm((old) => ({ ...old, [key]: value }) as BlogInput);
-  const format = (before: string, after = before) => {
+  const rememberSelection = () => {
+    const target = editor.current;
+    const current = window.getSelection();
+    if (target && current?.rangeCount && target.contains(current.anchorNode)) {
+      savedRange.current = current.getRangeAt(0).cloneRange();
+    }
+  };
+  const restoreSelection = () => {
     const target = editor.current;
     if (!target) return;
-    const start = target.selectionStart;
-    const end = target.selectionEnd;
-    set(
-      "content",
-      form.content.slice(0, start) +
-        before +
-        form.content.slice(start, end) +
-        after +
-        form.content.slice(end),
-    );
-    requestAnimationFrame(() => {
-      target.focus();
-      target.setSelectionRange(start + before.length, end + before.length);
-    });
+    target.focus();
+    if (savedRange.current) {
+      const current = window.getSelection();
+      current?.removeAllRanges();
+      current?.addRange(savedRange.current);
+    }
+  };
+  const command = (name: string, value?: string) => {
+    restoreSelection();
+    document.execCommand(name, false, value);
+    if (editor.current) set("content", editor.current.innerHTML);
+  };
+  const handleEditorInput = () => {
+    if (editor.current) set("content", editor.current.innerHTML);
+  };
+  const handlePaste = (event: ClipboardEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    restoreSelection();
+    const current = window.getSelection();
+    if (!current?.rangeCount) return;
+    const range = current.getRangeAt(0);
+    range.deleteContents();
+    const fragment = document.createDocumentFragment();
+    const html = event.clipboardData.getData("text/html");
+    if (html) {
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = html;
+      wrapper
+        .querySelectorAll("script, style, iframe, object, embed")
+        .forEach((node) => node.remove());
+      wrapper.querySelectorAll("*").forEach((node) => {
+        Array.from(node.attributes).forEach((attribute) => {
+          if (attribute.name.toLowerCase().startsWith("on")) node.removeAttribute(attribute.name);
+          if (
+            (attribute.name === "href" || attribute.name === "src") &&
+            attribute.value.trim().toLowerCase().startsWith("javascript:")
+          )
+            node.removeAttribute(attribute.name);
+        });
+      });
+      Array.from(wrapper.childNodes).forEach((node) => fragment.appendChild(node));
+    } else {
+      const text = event.clipboardData.getData("text/plain").replace(/\r\n?/g, "\n");
+      text.split("\n").forEach((line, index) => {
+        if (index > 0) fragment.appendChild(document.createElement("br"));
+        fragment.appendChild(document.createTextNode(line));
+      });
+    }
+    range.insertNode(fragment);
+    range.collapse(false);
+    savedRange.current = range.cloneRange();
+    handleEditorInput();
+  };
+  useEffect(() => {
+    if (!loading && editor.current && pendingContent.current !== null) {
+      editor.current.innerHTML = pendingContent.current;
+      pendingContent.current = null;
+    }
+  }, [loading]);
+  const handleToolbarMouseDown = (event: MouseEvent<HTMLDivElement>) => {
+    rememberSelection();
+    if ((event.target as HTMLElement).closest("button")) event.preventDefault();
   };
   async function submit(event: FormEvent, status: BlogInput["status"]) {
     event.preventDefault();
@@ -90,7 +155,7 @@ export function BlogEditor({ id }: Props) {
       !form.slug.trim() ||
       !form.author.trim() ||
       !form.excerpt.trim() ||
-      !form.content.trim()
+      !form.content.replace(/<[^>]*>/g, "").trim()
     ) {
       setError("Title, slug, author, excerpt, and content are required.");
       setSaving(false);
@@ -176,51 +241,107 @@ export function BlogEditor({ id }: Props) {
           </label>
           <label className="form-label">
             Content
-            <div className="mt-2 flex flex-wrap gap-2 rounded-t-md border border-b-0 bg-secondary p-2">
+            <div
+              className="mt-2 flex flex-wrap items-center gap-2 rounded-t-md border border-b-0 bg-secondary p-2"
+              onMouseDown={handleToolbarMouseDown}
+            >
               <button
                 type="button"
-                onClick={() => format("<h2>", "</h2>")}
+                onClick={() => command("formatBlock", "<h2>")}
                 className="rounded border bg-background px-2 py-1 text-xs font-bold"
               >
                 H2
               </button>
               <button
                 type="button"
-                onClick={() => format("<strong>", "</strong>")}
+                onClick={() => command("bold")}
                 className="rounded border bg-background px-2 py-1 text-xs font-bold"
               >
                 Bold
               </button>
               <button
                 type="button"
-                onClick={() => format("<em>", "</em>")}
+                onClick={() => command("italic")}
                 className="rounded border bg-background px-2 py-1 text-xs italic"
               >
                 Italic
               </button>
               <button
                 type="button"
-                onClick={() => format("<ul>\n<li>", "</li>\n</ul>")}
+                onClick={() => command("insertUnorderedList")}
                 className="rounded border bg-background px-2 py-1 text-xs"
               >
                 List
               </button>
               <button
                 type="button"
-                onClick={() => format('<a href="https://">', "</a>")}
+                onClick={() => command("createLink", "https://")}
                 className="rounded border bg-background px-2 py-1 text-xs"
               >
                 Link
               </button>
+              <select
+                aria-label="Font family"
+                defaultValue="inherit"
+                onChange={(e) => command("fontName", e.target.value)}
+                className="h-8 rounded border bg-background px-2 text-xs font-normal"
+              >
+                <option value="inherit">Font</option>
+                <option value="Arial, sans-serif">Arial</option>
+                <option value="Georgia, serif">Georgia</option>
+                <option value="Verdana, sans-serif">Verdana</option>
+                <option value="Courier New, monospace">Monospace</option>
+              </select>
+              <select
+                aria-label="Font size"
+                defaultValue="inherit"
+                onChange={(e) => command("fontSize", e.target.value)}
+                className="h-8 rounded border bg-background px-2 text-xs font-normal"
+              >
+                <option value="inherit">Size</option>
+                <option value="2">Small</option>
+                <option value="3">Normal</option>
+                <option value="5">Large</option>
+                <option value="7">Heading</option>
+              </select>
+              <label
+                className="flex h-8 items-center gap-1 rounded border bg-background px-2 text-xs font-normal"
+                title="Font color"
+              >
+                <span>Text</span>
+                <input
+                  aria-label="Font color"
+                  type="color"
+                  defaultValue="#17206B"
+                  onChange={(e) => command("foreColor", e.target.value)}
+                  className="size-5 cursor-pointer border-0 bg-transparent p-0"
+                />
+              </label>
+              <label
+                className="flex h-8 items-center gap-1 rounded border bg-background px-2 text-xs font-normal"
+                title="Highlight color"
+              >
+                <span>Highlight</span>
+                <input
+                  aria-label="Highlight color"
+                  type="color"
+                  defaultValue="#FFF3B0"
+                  onChange={(e) => command("hiliteColor", e.target.value)}
+                  className="size-5 cursor-pointer border-0 bg-transparent p-0"
+                />
+              </label>
             </div>
-            <textarea
+            <div
               ref={editor}
-              required
-              value={form.content}
-              onChange={(e) => set("content", e.target.value)}
-              rows={16}
-              className="rounded-b-md border p-3 font-mono text-sm font-normal"
-              placeholder="Write your story here. Use the toolbar for simple formatting."
+              contentEditable
+              role="textbox"
+              aria-multiline="true"
+              onInput={handleEditorInput}
+              onPaste={handlePaste}
+              onKeyUp={rememberSelection}
+              onMouseUp={rememberSelection}
+              className="min-h-80 whitespace-pre-wrap rounded-b-md border p-3 text-sm font-normal outline-none focus:ring-2 focus:ring-primary"
+              data-placeholder="Write your story here. Use the toolbar to format selected text."
             />
           </label>
         </div>

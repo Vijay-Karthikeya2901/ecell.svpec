@@ -55,3 +55,14 @@ git push origin YOUR_BRANCH
 ```
 
 The only remaining setup requirement is entering the Firebase Web app values, enabling Authentication and Firestore, and creating the first `admins/{uid}` document. No Cloud Storage setup or Blaze billing plan is required.
+
+
+## 8. Team and event management
+
+The admin dashboard also includes `/admin/team` and `/admin/events`. Team members are stored in `team/{memberId}` with `name`, `role`, `group`, `imageUrl`, `linkedinUrl`, `instagramUrl`, `createdAt`, and `updatedAt`; Instagram is optional. Events are stored in `events/{eventId}` with `name`, `description`, `date`, `time`, `dateTba`, `timeTba`, `venue`, `imageUrl`, `registrationUrl`, `createdAt`, and `updatedAt`. Administrators can add, edit, and remove both types of content; public visitors can read them. When an event date or time is not fixed, use its independent **Yet to be announced** option.
+
+Team profile photos and event posters use externally hosted image URLs. Firebase does not upload or store these images, so this workflow remains compatible with the Spark/no-cost plan. Use a stable public HTTPS URL from the organization's website, a trusted image host, or an image CDN.
+
+## 9. Testimonials
+
+The seeded placeholder testimonials have been removed. A good collection workflow is to use a short Google Form after each event with consent language, asking for the participant's name, course/year, role, a 1–2 sentence response, and permission to publish their name, quote, and photo. Review responses manually, confirm consent, then add approved testimonials to the site. For stronger authenticity, ask for a specific before/after result rather than a generic satisfaction rating.

@@ -34,7 +34,38 @@ export type FirebaseBlog = BlogInput & {
   createdAt: Timestamp | null;
   updatedAt: Timestamp | null;
 };
+export type TeamInput = {
+  name: string;
+  role: string;
+  group: string;
+  imageUrl: string;
+  linkedinUrl: string;
+  instagramUrl: string;
+};
+export type FirebaseTeamMember = TeamInput & {
+  id: string;
+  createdAt: Timestamp | null;
+  updatedAt: Timestamp | null;
+};
+export type EventInput = {
+  name: string;
+  description: string;
+  date: string;
+  time: string;
+  dateTba: boolean;
+  timeTba: boolean;
+  venue: string;
+  imageUrl: string;
+  registrationUrl: string;
+};
+export type FirebaseEvent = EventInput & {
+  id: string;
+  createdAt: Timestamp | null;
+  updatedAt: Timestamp | null;
+};
 const blogsRef = () => collection(requireFirebase(db, "Firestore"), "blogs");
+const teamRef = () => collection(requireFirebase(db, "Firestore"), "team");
+const eventsRef = () => collection(requireFirebase(db, "Firestore"), "events");
 const toBlog = (
   snapshot: QueryDocumentSnapshot<DocumentData> | { id: string; data: () => DocumentData },
 ): FirebaseBlog => {
@@ -57,6 +88,42 @@ const toBlog = (
 const clean = (input: BlogInput) => ({
   ...input,
   publishedAt: input.status === "published" ? (input.publishedAt ?? new Date()) : null,
+  updatedAt: serverTimestamp(),
+  createdAt: serverTimestamp(),
+});
+const toTeam = (snapshot: QueryDocumentSnapshot<DocumentData>): FirebaseTeamMember => {
+  const value = snapshot.data();
+  return {
+    id: snapshot.id,
+    name: value["name"] ?? "",
+    role: value["role"] ?? "",
+    group: value["group"] ?? "",
+    imageUrl: value["imageUrl"] ?? "",
+    linkedinUrl: value["linkedinUrl"] ?? "",
+    instagramUrl: value["instagramUrl"] ?? "",
+    createdAt: value["createdAt"] ?? null,
+    updatedAt: value["updatedAt"] ?? null,
+  };
+};
+const toEvent = (snapshot: QueryDocumentSnapshot<DocumentData>): FirebaseEvent => {
+  const value = snapshot.data();
+  return {
+    id: snapshot.id,
+    name: value["name"] ?? "",
+    description: value["description"] ?? "",
+    date: value["date"] ?? "",
+    time: value["time"] ?? "",
+    dateTba: value["dateTba"] ?? !value["date"],
+    timeTba: value["timeTba"] ?? !value["time"],
+    venue: value["venue"] ?? "",
+    imageUrl: value["imageUrl"] ?? "",
+    registrationUrl: value["registrationUrl"] ?? "",
+    createdAt: value["createdAt"] ?? null,
+    updatedAt: value["updatedAt"] ?? null,
+  };
+};
+const cleanManaged = <T extends object>(input: T) => ({
+  ...input,
   updatedAt: serverTimestamp(),
   createdAt: serverTimestamp(),
 });
@@ -117,4 +184,46 @@ export async function unpublishBlog(id: string): Promise<void> {
 }
 export async function deleteBlog(id: string): Promise<void> {
   await deleteDoc(doc(requireFirebase(db, "Firestore"), "blogs", id));
+}
+
+export async function getAllTeamMembers(): Promise<FirebaseTeamMember[]> {
+  const result = await getDocs(query(teamRef(), orderBy("createdAt", "desc")));
+  return result.docs.map(toTeam);
+}
+export async function getTeamMemberById(id: string): Promise<FirebaseTeamMember | null> {
+  const result = await getDoc(doc(requireFirebase(db, "Firestore"), "team", id));
+  return result.exists() ? toTeam(result as QueryDocumentSnapshot<DocumentData>) : null;
+}
+export async function createTeamMember(input: TeamInput): Promise<string> {
+  const result = await addDoc(teamRef(), cleanManaged(input));
+  return result.id;
+}
+export async function updateTeamMember(id: string, input: TeamInput): Promise<void> {
+  const values = cleanManaged(input);
+  delete (values as Partial<typeof values>).createdAt;
+  await updateDoc(doc(requireFirebase(db, "Firestore"), "team", id), values);
+}
+export async function deleteTeamMember(id: string): Promise<void> {
+  await deleteDoc(doc(requireFirebase(db, "Firestore"), "team", id));
+}
+
+export async function getUpcomingEvents(): Promise<FirebaseEvent[]> {
+  const result = await getDocs(query(eventsRef(), orderBy("date", "asc")));
+  return result.docs.map(toEvent);
+}
+export async function getEventById(id: string): Promise<FirebaseEvent | null> {
+  const result = await getDoc(doc(requireFirebase(db, "Firestore"), "events", id));
+  return result.exists() ? toEvent(result as QueryDocumentSnapshot<DocumentData>) : null;
+}
+export async function createEvent(input: EventInput): Promise<string> {
+  const result = await addDoc(eventsRef(), cleanManaged(input));
+  return result.id;
+}
+export async function updateEvent(id: string, input: EventInput): Promise<void> {
+  const values = cleanManaged(input);
+  delete (values as Partial<typeof values>).createdAt;
+  await updateDoc(doc(requireFirebase(db, "Firestore"), "events", id), values);
+}
+export async function deleteEvent(id: string): Promise<void> {
+  await deleteDoc(doc(requireFirebase(db, "Firestore"), "events", id));
 }

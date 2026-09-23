@@ -36,7 +36,7 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
             loading="lazy"
             width={1408}
             height={912}
-            className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+            className="h-full w-full bg-secondary object-contain transition duration-500 group-hover:scale-105"
           />
         </div>
         <div className={cn("flex flex-1 flex-col p-6", featured && "lg:justify-center lg:p-10")}>
@@ -76,7 +76,9 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
                 className="size-9 shrink-0 rounded-full object-cover"
               />
               <div className="min-w-0">
-                <strong className="block truncate text-sm text-brand-navy">{post.author.name}</strong>
+                <strong className="block truncate text-sm text-brand-navy">
+                  {post.author.name}
+                </strong>
                 <span className="flex items-center gap-1 text-xs text-muted-foreground">
                   <CalendarDays className="size-3" />
                   {formatBlogDate(post.publishedAt)}
