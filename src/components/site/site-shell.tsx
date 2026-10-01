@@ -10,7 +10,12 @@ const links = [
 ] as const;
 
 export function Brand() {
-  return <Link to="/" className="flex items-center gap-3" aria-label="E-Cell home"><span className="grid size-10 place-items-center rounded-md bg-primary text-lg font-black text-primary-foreground">E</span><span><strong className="block text-lg leading-none text-brand-navy">E-CELL</strong><span className="mt-1 block text-[9px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">SVPEC · Visakhapatnam</span></span></Link>;
+  return <Link to="/" className="flex items-center gap-3" aria-label="E-Cell home"><img
+  src="/logo.png"
+  alt="E-Cell SVPEC logo"
+  className="size-10 rounded-md object-contain"
+/>
+<span><strong className="block text-lg leading-none text-brand-navy">E-CELL</strong><span className="mt-1 block text-[9px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">SVPEC · Visakhapatnam</span></span></Link>;
 }
 
 export function Navbar() {
