@@ -17,7 +17,9 @@ import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as InitiativesRouteImport } from './routes/initiatives'
 import { Route as TeamRouteImport } from './routes/team'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminCountdownRouteImport } from './routes/admin/countdown'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminTestimonialsRouteImport } from './routes/admin/testimonials'
 import { Route as BlogsIndexRouteImport } from './routes/blogs/index'
 import { Route as BlogsSlugRouteImport } from './routes/blogs/$slug'
 import { Route as AdminBlogsIndexRouteImport } from './routes/admin/blogs/index'
@@ -70,9 +72,19 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminCountdownRoute = AdminCountdownRouteImport.update({
+  id: '/admin/countdown',
+  path: '/admin/countdown',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminTestimonialsRoute = AdminTestimonialsRouteImport.update({
+  id: '/admin/testimonials',
+  path: '/admin/testimonials',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogsIndexRoute = BlogsIndexRouteImport.update({
@@ -139,7 +151,9 @@ export interface FileRoutesByFullPath {
   '/gallery': typeof GalleryRoute
   '/initiatives': typeof InitiativesRoute
   '/team': typeof TeamRoute
+  '/admin/countdown': typeof AdminCountdownRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/testimonials': typeof AdminTestimonialsRoute
   '/blogs/$slug': typeof BlogsSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/blogs/': typeof BlogsIndexRoute
@@ -161,7 +175,9 @@ export interface FileRoutesByTo {
   '/gallery': typeof GalleryRoute
   '/initiatives': typeof InitiativesRoute
   '/team': typeof TeamRoute
+  '/admin/countdown': typeof AdminCountdownRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/testimonials': typeof AdminTestimonialsRoute
   '/blogs/$slug': typeof BlogsSlugRoute
   '/admin': typeof AdminIndexRoute
   '/blogs': typeof BlogsIndexRoute
@@ -184,7 +200,9 @@ export interface FileRoutesById {
   '/gallery': typeof GalleryRoute
   '/initiatives': typeof InitiativesRoute
   '/team': typeof TeamRoute
+  '/admin/countdown': typeof AdminCountdownRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/testimonials': typeof AdminTestimonialsRoute
   '/blogs/$slug': typeof BlogsSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/blogs/': typeof BlogsIndexRoute
@@ -208,7 +226,9 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/initiatives'
     | '/team'
+    | '/admin/countdown'
     | '/admin/login'
+    | '/admin/testimonials'
     | '/blogs/$slug'
     | '/admin/'
     | '/blogs/'
@@ -230,7 +250,9 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/initiatives'
     | '/team'
+    | '/admin/countdown'
     | '/admin/login'
+    | '/admin/testimonials'
     | '/blogs/$slug'
     | '/admin'
     | '/blogs'
@@ -252,7 +274,9 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/initiatives'
     | '/team'
+    | '/admin/countdown'
     | '/admin/login'
+    | '/admin/testimonials'
     | '/blogs/$slug'
     | '/admin/'
     | '/blogs/'
@@ -275,7 +299,9 @@ export interface RootRouteChildren {
   GalleryRoute: typeof GalleryRoute
   InitiativesRoute: typeof InitiativesRoute
   TeamRoute: typeof TeamRoute
+  AdminCountdownRoute: typeof AdminCountdownRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminTestimonialsRoute: typeof AdminTestimonialsRoute
   BlogsSlugRoute: typeof BlogsSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
   BlogsIndexRoute: typeof BlogsIndexRoute
@@ -348,11 +374,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/countdown': {
+      id: '/admin/countdown'
+      path: '/admin/countdown'
+      fullPath: '/admin/countdown'
+      preLoaderRoute: typeof AdminCountdownRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/admin/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/testimonials': {
+      id: '/admin/testimonials'
+      path: '/admin/testimonials'
+      fullPath: '/admin/testimonials'
+      preLoaderRoute: typeof AdminTestimonialsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blogs/': {
@@ -443,7 +483,9 @@ const rootRouteChildren: RootRouteChildren = {
   GalleryRoute: GalleryRoute,
   InitiativesRoute: InitiativesRoute,
   TeamRoute: TeamRoute,
+  AdminCountdownRoute: AdminCountdownRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminTestimonialsRoute: AdminTestimonialsRoute,
   BlogsSlugRoute: BlogsSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
   BlogsIndexRoute: BlogsIndexRoute,
@@ -460,13 +502,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
