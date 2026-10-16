@@ -9,6 +9,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  setDoc,
   updateDoc,
   where,
   type DocumentData,
@@ -227,3 +228,121 @@ export async function updateEvent(id: string, input: EventInput): Promise<void> 
 export async function deleteEvent(id: string): Promise<void> {
   await deleteDoc(doc(requireFirebase(db, "Firestore"), "events", id));
 }
+
+/* -------------------------------------------------------------------------- */
+/*  Testimonials & Student Reviews (Moderation Workflow)                      */
+/* -------------------------------------------------------------------------- */
+
+export type TestimonialStatus = "pending" | "approved" | "rejected";
+
+export type TestimonialInput = {
+  name: string;
+  role: string;
+  quote: string;
+  imageUrl?: string;
+  status: TestimonialStatus;
+};
+
+export type FirebaseTestimonial = TestimonialInput & {
+  id: string;
+  createdAt: Timestamp | null;
+  updatedAt: Timestamp | null;
+};
+
+const testimonialsRef = () => collection(requireFirebase(db, "Firestore"), "testimonials");
+
+const toTestimonial = (snapshot: QueryDocumentSnapshot<DocumentData>): FirebaseTestimonial => {
+  const value = snapshot.data();
+  return {
+    id: snapshot.id,
+    name: value["name"] ?? "",
+    role: value["role"] ?? "Student Innovator",
+    quote: value["quote"] ?? "",
+    imageUrl: value["imageUrl"] ?? "",
+    status: (value["status"] as TestimonialStatus) ?? "pending",
+    createdAt: value["createdAt"] ?? null,
+    updatedAt: value["updatedAt"] ?? null,
+  };
+};
+
+export async function getApprovedTestimonials(): Promise<FirebaseTestimonial[]> {
+  const result = await getDocs(
+    query(testimonialsRef(), where("status", "==", "approved"), orderBy("createdAt", "desc")),
+  );
+  return result.docs.map(toTestimonial);
+}
+
+export async function getAllTestimonials(): Promise<FirebaseTestimonial[]> {
+  const result = await getDocs(query(testimonialsRef(), orderBy("createdAt", "desc")));
+  return result.docs.map(toTestimonial);
+}
+
+export async function createTestimonial(input: TestimonialInput): Promise<string> {
+  const result = await addDoc(testimonialsRef(), cleanManaged(input));
+  return result.id;
+}
+
+export async function approveTestimonial(id: string): Promise<void> {
+  await updateDoc(doc(requireFirebase(db, "Firestore"), "testimonials", id), {
+    status: "approved",
+    updatedAt: serverTimestamp(),
+  });
+}
+
+export async function rejectTestimonial(id: string): Promise<void> {
+  await updateDoc(doc(requireFirebase(db, "Firestore"), "testimonials", id), {
+    status: "rejected",
+    updatedAt: serverTimestamp(),
+  });
+}
+
+export async function deleteTestimonial(id: string): Promise<void> {
+  await deleteDoc(doc(requireFirebase(db, "Firestore"), "testimonials", id));
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Flagship Event Countdown Settings                                         */
+/* -------------------------------------------------------------------------- */
+
+export type CountdownSettings = {
+  enabled: boolean;
+  badgeText: string;
+  eventName: string;
+  eventEdition: string;
+  subtitle: string;
+  targetDate: string; // ISO datetime e.g. "2026-10-24T09:30:00"
+  dateDisplay: string;
+  venue: string;
+  prizePool: string;
+  attendees: string;
+  registrationUrl: string;
+};
+
+export async function getCountdownSettings(): Promise<CountdownSettings | null> {
+  const result = await getDoc(doc(requireFirebase(db, "Firestore"), "settings", "countdown"));
+  if (!result.exists()) return null;
+  const value = result.data();
+  return {
+    enabled: value["enabled"] ?? true,
+    badgeText: value["badgeText"] ?? "Flagship Annual Conclave",
+    eventName: value["eventName"] ?? "E-SUMMIT",
+    eventEdition: value["eventEdition"] ?? "2026",
+    subtitle:
+      value["subtitle"] ??
+      "The grand confluence of campus visionaries, seed investors, and startup pioneers at Sanketika Vidya Parishad Engineering College.",
+    targetDate: value["targetDate"] ?? "2026-10-24T09:30:00",
+    dateDisplay: value["dateDisplay"] ?? "24 - 25 October 2026",
+    venue: value["venue"] ?? "Main Auditorium, SVPEC",
+    prizePool: value["prizePool"] ?? "₹1,50,000+ Prizes",
+    attendees: value["attendees"] ?? "500+ Attendees",
+    registrationUrl: value["registrationUrl"] ?? "/contact",
+  };
+}
+
+export async function saveCountdownSettings(settings: CountdownSettings): Promise<void> {
+  await setDoc(doc(requireFirebase(db, "Firestore"), "settings", "countdown"), {
+    ...settings,
+    updatedAt: serverTimestamp(),
+  });
+}
+

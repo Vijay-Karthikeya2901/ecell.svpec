@@ -1,0 +1,6 @@
+{
+  "name": "E-Cell SVPEC",
+  "description": "The Entrepreneurship Cell of Sanketika Vidya Parishad Engineering College, Visakhapatnam. Transforming ideas into innovation, businesses, and impact.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

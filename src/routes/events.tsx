@@ -21,7 +21,6 @@ export const Route = createFileRoute("/events")({
     >
       <CmsEvents />
       <CmsFeaturedEvent />
-      <Gallery />
     </ContentPage>
   ),
 });
