@@ -1,3 +1,4 @@
+import DOMPurify from "isomorphic-dompurify";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowLeft, CalendarDays, Clock } from "lucide-react";
@@ -131,9 +132,13 @@ function BlogPostPage() {
                   </h2>
                 )}
                 {section.paragraphs.map((para, pIdx) => (
-                  <p key={pIdx} className="text-base text-muted-foreground leading-7 sm:text-lg sm:leading-8">
-                    {para}
-                  </p>
+                  <div
+                    key={pIdx}
+                    className="blog-content"
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(para),
+                    }}
+                  />
                 ))}
               </div>
             ))}
