@@ -7,10 +7,8 @@ import { CTA } from "@/components/site/home-sections";
 import { Reveal, SectionHeading, SiteShell } from "@/components/site/site-shell";
 import { Button } from "@/components/ui/button";
 import {
-  blogs,
   formatBlogDate,
   getBlogBySlug as getFallback,
-  getRelatedBlogs,
   type BlogPost,
 } from "@/data/site-data";
 import { getBlogBySlug } from "@/lib/firebase-firestore";
@@ -22,13 +20,50 @@ function BlogPostPage() {
   const { slug } = Route.useParams();
   const [post, setPost] = useState<BlogPost | null>(() => getFallback(slug) ?? null);
   const [loading, setLoading] = useState(true);
+  const [related, setRelated] = useState<BlogPost[]>([]);
 
-  useEffect(() => {
-    getBlogBySlug(slug)
-      .then((item) => setPost(item ? firebaseBlogToPublic(item) : (getFallback(slug) ?? null)))
-      .catch(() => setPost(getFallback(slug) ?? null))
-      .finally(() => setLoading(false));
-  }, [slug]);
+
+useEffect(() => {
+  let cancelled = false;
+
+  setLoading(true);
+  setRelated([]);
+
+  getBlogBySlug(slug)
+    .then(async (item) => {
+      if (cancelled) return;
+
+      const currentPost = item ? firebaseBlogToPublic(item) : null;
+      setPost(currentPost);
+
+      if (!currentPost) return;
+
+      const { getPublishedBlogs } = await import("@/lib/firebase-firestore");
+
+      const publishedBlogs = await getPublishedBlogs();
+
+      if (cancelled) return;
+
+      setRelated(
+        publishedBlogs
+          .filter((blog) => blog.slug !== currentPost.slug)
+          .slice(0, 3)
+          .map(firebaseBlogToPublic)
+      );
+    })
+    .catch((error) => {
+      console.error("Failed to load blog or related blogs:", error);
+      if (!cancelled) setRelated([]);
+    })
+    .finally(() => {
+      if (!cancelled) setLoading(false);
+    });
+
+  return () => {
+    cancelled = true;
+  };
+}, [slug]);
+
 
   if (loading && !post)
     return (
@@ -61,7 +96,7 @@ function BlogPostPage() {
       </SiteShell>
     );
 
-  const related = getRelatedBlogs(post, 3);
+
 
   return (
     <SiteShell>
@@ -134,9 +169,12 @@ function BlogPostPage() {
                 {section.paragraphs.map((para, pIdx) => (
                   <div
                     key={pIdx}
-                    className="blog-content"
+                    className="blog-content text-base leading-7 sm:text-lg sm:leading-8 [&_p]:mb-4 [&_h1]:mb-4 [&_h1]:mt-6 [&_h1]:text-3xl [&_h1]:font-bold [&_h2]:mb-3 [&_h2]:mt-6 [&_h2]:text-2xl [&_h2]:font-bold [&_strong]:font-bold [&_em]:italic [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6"
                     dangerouslySetInnerHTML={{
-                      __html: DOMPurify.sanitize(para),
+                      __html: DOMPurify.sanitize(para, {
+                        ADD_ATTR: ["style", "color"],
+                        ADD_TAGS: ["font"],
+                      }),
                     }}
                   />
                 ))}

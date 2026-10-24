@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import {
   blogFilters,
-  blogs as fallbackBlogs,
   type BlogFilter,
   type BlogPost,
 } from "@/data/site-data";
@@ -12,17 +11,45 @@ import { firebaseBlogToPublic } from "@/lib/blog-adapter";
 import { BlogCard } from "./blog-card";
 
 export function BlogsListing() {
+
   const [active, setActive] = useState<BlogFilter>("All");
-  const [posts, setPosts] = useState<BlogPost[]>(fallbackBlogs);
+  const [posts, setPosts] = useState<BlogPost[]>([]);
   const [notice, setNotice] = useState("");
 
   useEffect(() => {
+    let cancelled = false;
+
     getPublishedBlogs()
       .then((items) => {
-        if (items.length) setPosts(items.map(firebaseBlogToPublic));
+        console.log("[Blogs Debug] Firestore returned:", items.length);
+        console.log(
+          "[Blogs Debug] Blog titles:",
+          items.map((blog) => ({
+            title: blog.title,
+            status: blog.status,
+            publishedAt: blog.publishedAt,
+          }))
+        );
+
+        if (cancelled) return;
+
+        setPosts(items.map(firebaseBlogToPublic));
+        setNotice("");
       })
-      .catch(() => setNotice("Showing verified articles while dynamic sync is connecting."));
+      .catch((error) => {
+        console.error("Failed to load blogs from Firebase:", error);
+
+        if (!cancelled) {
+          setPosts([]);
+          setNotice("Unable to load blogs. Please try again later.");
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
+
 
   const filtered = active === "All" ? posts : posts.filter((post) => post.category === active);
   const [featured, ...rest] = filtered;
